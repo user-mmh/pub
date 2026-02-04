@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SillyTavern Botmaker - Medieval Otome</title>
+    <style>
+        :root {
+            --dark-brown: #3d2817;
+            --platinum-gold: #d4af37;
+            --light-bg: #2a1810;
+            --darker-bg: #1a0f0a;
+            --accent-brown: #5c3d28;
+            --text-light: #f5e6d3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #000000;
+            background-attachment: fixed;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(61, 40, 23, 0.98) 0%, rgba(40, 25, 15, 0.98) 100%);
+            border-bottom: 3px solid var(--dark-brown);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--platinum-gold);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            color: var(--platinum-gold);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--platinum-gold);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            background: rgba(61, 40, 23, 0.6);
+            border: 2px solid var(--platinum-gold);
+            border-radius: 8px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15);
+        }
+
+        h2 {
+            color: var(--platinum-gold);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid var(--dark-brown);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--platinum-gold);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+            color: var(--text-light);
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            overflow-y: auto;
+            max-height: 2000px;
+            padding-right: 0.5rem;
+        }
+
+        /* Optimized scrollbox styling */
+        .character-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .character-grid::-webkit-scrollbar-track {
+            background: rgba(61, 40, 23, 0.3);
+            border-radius: 10px;
+        }
+
+        .character-grid::-webkit-scrollbar-thumb {
+            background: var(--platinum-gold);
+            border-radius: 10px;
+        }
+
+        .character-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-brown);
+        }
+
+        @media (min-width: 600px) {
+            .character-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .character-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.5) 0%, rgba(61, 40, 23, 0.3) 100%);
+            border: 2px solid var(--platinum-gold);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            border-color: var(--dark-brown);
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.7) 0%, rgba(61, 40, 23, 0.5) 100%);
+        }
+
+        .character-image-placeholder {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: linear-gradient(135deg, rgba(61, 40, 23, 0.8), rgba(42, 24, 16, 0.8));
+            border: 2px dashed var(--platinum-gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--platinum-gold);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .character-name {
+            font-size: 1.3rem;
+            color: var(--platinum-gold);
+            margin-bottom: 0.25rem;
+            font-weight: bold;
+        }
+
+        .character-role {
+            color: var(--dark-brown);
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            font-style: italic;
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            background-color: rgba(212, 175, 55, 0.2);
+            color: var(--platinum-gold);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            border: 1px solid var(--platinum-gold);
+        }
+
+        .character-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .character-traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .trait {
+            background-color: rgba(61, 40, 23, 0.6);
+            color: var(--platinum-gold);
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid var(--platinum-gold);
+        }
+
+        .character-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+
+        .char-btn {
+            padding: 0.6rem;
+            border: 1px solid var(--platinum-gold);
+            background-color: rgba(61, 40, 23, 0.7);
+            color: var(--platinum-gold);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .char-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid var(--platinum-gold);
+            background-color: rgba(61, 40, 23, 0.7);
+            color: var(--platinum-gold);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .filter-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: scale(1.05);
+        }
+
+        .filter-btn.active {
+            background-color: var(--platinum-gold);
+            color: var(--dark-brown);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .gender-tag {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .gender-tag.male {
+            background-color: rgba(100, 150, 200, 0.3);
+            color: #87ceeb;
+            border: 1px solid #87ceeb;
+        }
+
+        .gender-tag.female {
+            background-color: rgba(219, 112, 147, 0.3);
+            color: #db7093;
+            border: 1px solid #db7093;
+        }
+
+        .character-card.hidden {
+            display: none;
+        }
+
+        footer {
+            background: linear-gradient(180deg, rgba(61, 40, 23, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
+            border-top: 3px solid var(--dark-brown);
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-light);
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background-color: var(--platinum-gold);
+            margin: 1.5rem auto;
+        }
+
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--platinum-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 1rem;
+                flex-direction: column;
+                background: rgba(61, 40, 23, 0.98);
+                border: 2px solid var(--platinum-gold);
+                border-radius: 4px;
+                padding: 1rem;
+                min-width: 200px;
+                gap: 0.5rem;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+
+            main {
+                padding: 1rem 0.5rem;
+            }
+
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">✦ Botmaker ✦</div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <nav id="nav-menu">
+                <a href="#home">Home</a>
+                <a href="#about">About Me</a>
+                <a href="#characters">Characters</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home">
+            <h2>Welcome, Noble Traveler</h2>
+            <div class="divider"></div>
+            <p style="text-align: center; font-size: 1.1rem; margin-bottom: 1rem;">
+                Step into a world of medieval romance, mysterious characters, and enchanting tales. 
+                Embark on your journey through interactive stories and unforgettable encounters.
+            </p>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about">
+            <h2>About Me</h2>
+            <div class="divider"></div>
+            <div class="about-content">
+                <h3>Creator's Tale</h3>
+                <p>
+                    Greetings, fellow storyteller. I am a passionate creator dedicated to crafting immersive 
+                    worlds where love, mystery, and adventure intertwine. My journey began with a fascination 
+                    for medieval fantasy and otome game narratives—tales where your choices shape destiny itself.
+                </p>
+                
+                <h3>Our Mission</h3>
+                <p>
+                    Here, you will find thoughtfully developed characters, compelling story arcs, and interactive 
+                    experiences designed to transport you to realms of wonder. Each bot is crafted with care to provide 
+                    meaningful conversations and emotional connections that transcend the ordinary.
+                </p>
+                
+                <h3>What Awaits You</h3>
+                <p>
+                    Whether you seek romance, intrigue, or companionship, our collection of characters is ready to welcome 
+                    you. Every interaction is an opportunity to discover new layers of personality, uncover secrets, and 
+                    perhaps even change the course of their stories through your choices.
+                </p>
+            </div>
+        </section>
+
+        <!-- Characters Section -->
+        <section id="characters">
+            <h2>Character Collection</h2>
+            <div class="divider"></div>
+            
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all">All Characters</button>
+                <button class="filter-btn" data-filter="male">♂ Male</button>
+                <button class="filter-btn" data-filter="female">♀ Female</button>
+            </div>
+            
+            <div class="character-grid">
+                <!-- CHARACTER 1: Sir Aldric -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Sir Aldric
+                    </div>
+                    <div class="character-name">Sir Aldric</div>
+                    <div class="character-role">Knight of the Realm</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A noble knight bound by honor and duty, yet harboring secrets of his own heart.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Honorable</span>
+                        <span class="trait">Mysterious</span>
+                        <span class="trait">Protective</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 2: Lady Seraphine -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Lady Seraphine
+                    </div>
+                    <div class="character-name">Lady Seraphine</div>
+                    <div class="character-role">Enchantress of the Tower</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A powerful sorceress with knowledge of ancient magics and hidden prophecies.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Wise</span>
+                        <span class="trait">Enigmatic</span>
+                        <span class="trait">Powerful</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 3: Lyrian the Bard -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Lyrian the Bard
+                    </div>
+                    <div class="character-name">Lyrian the Bard</div>
+                    <div class="character-role">Wandering Minstrel</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A charming bard whose words weave spells and whose melodies touch the soul.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Charismatic</span>
+                        <span class="trait">Witty</span>
+                        <span class="trait">Artistic</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 4: Prince Dominic -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Prince Dominic
+                    </div>
+                    <div class="character-name">Prince Dominic</div>
+                    <div class="character-role">Heir to the Throne</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A conflicted prince torn between duty and desire, power and compassion.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Regal</span>
+                        <span class="trait">Conflicted</span>
+                        <span class="trait">Diplomatic</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 5: Kael the Shadow -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Kael the Shadow
+                    </div>
+                    <div class="character-name">Kael the Shadow</div>
+                    <div class="character-role">Mercenary with a Past</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A skilled fighter with a dangerous reputation, hiding a compassionate heart beneath.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Dangerous</span>
+                        <span class="trait">Loyal</span>
+                        <span class="trait">Guarded</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 6: Isolde the Healer -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Isolde the Healer
+                    </div>
+                    <div class="character-name">Isolde the Healer</div>
+                    <div class="character-role">Priestess of the Moonlit Temple</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A gentle healer devoted to moonlight magic and the well-being of others.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Compassionate</span>
+                        <span class="trait">Serene</span>
+                        <span class="trait">Intuitive</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 7: Cassian the Rogue -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Cassian the Rogue
+                    </div>
+                    <div class="character-name">Cassian the Rogue</div>
+                    <div class="character-role">Thief of Hearts</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A cunning rogue with silver tongue and nimble fingers, always one step ahead.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Cunning</span>
+                        <span class="trait">Charming</span>
+                        <span class="trait">Unpredictable</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 8: Lady Elowen -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Lady Elowen
+                    </div>
+                    <div class="character-name">Lady Elowen</div>
+                    <div class="character-role">Fae of the Ancient Woods</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A mysterious fae being with an ethereal presence and connection to nature's secrets.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Mystical</span>
+                        <span class="trait">Alluring</span>
+                        <span class="trait">Fickle</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 9: Lord Ashton -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Lord Ashton
+                    </div>
+                    <div class="character-name">Lord Ashton</div>
+                    <div class="character-role">Dark Lord of the North</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A brooding lord with a tragic past, capable of both cruelty and unexpected tenderness.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Intense</span>
+                        <span class="trait">Tragic</span>
+                        <span class="trait">Dominant</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 10: Sister Miriam -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Sister Miriam
+                    </div>
+                    <div class="character-name">Sister Miriam</div>
+                    <div class="character-role">Devout Holy Maiden</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A virtuous sister wrestling with forbidden feelings and her vows to the divine.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Virtuous</span>
+                        <span class="trait">Conflicted</span>
+                        <span class="trait">Kind</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 11: Rowan the Ranger -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Rowan the Ranger
+                    </div>
+                    <div class="character-name">Rowan the Ranger</div>
+                    <div class="character-role">Keeper of the Wilds</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A skilled tracker at home in nature, rugged yet surprisingly tender-hearted.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Rugged</span>
+                        <span class="trait">Independent</span>
+                        <span class="trait">Protective</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 12: Lady Iris -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Lady Iris
+                    </div>
+                    <div class="character-name">Lady Iris</div>
+                    <div class="character-role">Duchess of Dreams</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A sophisticated duchess with refined tastes and a hidden rebellious streak.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Elegant</span>
+                        <span class="trait">Witty</span>
+                        <span class="trait">Rebellious</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 13: Theron the Blacksmith -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Theron the Blacksmith
+                    </div>
+                    <div class="character-name">Theron the Blacksmith</div>
+                    <div class="character-role">Master of Forge and Flame</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A gruff craftsman whose strong hands hide a surprising gentleness and depth.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Strong</span>
+                        <span class="trait">Dependable</span>
+                        <span class="trait">Hidden Depths</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 14: Selena the Huntress -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Selena the Huntress
+                    </div>
+                    <div class="character-name">Selena the Huntress</div>
+                    <div class="character-role">Silver Arrow of the Hunt</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A fierce warrior with deadly aim, her heart burns as bright as her spirit.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Fierce</span>
+                        <span class="trait">Independent</span>
+                        <span class="trait">Passionate</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 15: Adrian the Scholar -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Adrian the Scholar
+                    </div>
+                    <div class="character-name">Adrian the Scholar</div>
+                    <div class="character-role">Keeper of Ancient Knowledge</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        An erudite scholar whose vast knowledge masks a yearning for human connection.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Intelligent</span>
+                        <span class="trait">Soft-Spoken</span>
+                        <span class="trait">Lonely</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 16: Astrid the Valkyrie -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Astrid the Valkyrie
+                    </div>
+                    <div class="character-name">Astrid the Valkyrie</div>
+                    <div class="character-role">Divine Warrior Maiden</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A celestial warrior with a fierce spirit and an unexpected vulnerability beneath armor.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Powerful</span>
+                        <span class="trait">Honorable</span>
+                        <span class="trait">Vulnerable</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 17: Marcus the Spy -->
+                <div class="character-card" data-gender="male">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Marcus the Spy
+                    </div>
+                    <div class="character-name">Marcus the Spy</div>
+                    <div class="character-role">Master of Shadows and Secrets</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag male">♂ Male</span>
+                    <div class="character-description">
+                        A mysterious operative living in the shadows, haunted by the secrets he keeps.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Mysterious</span>
+                        <span class="trait">Skilled</span>
+                        <span class="trait">Haunted</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+
+                <!-- CHARACTER 18: Evangeline the Oracle -->
+                <div class="character-card" data-gender="female">
+                    <div class="character-image-placeholder">
+                        [Place 3:4 Image Here from catbox.moe]<br><br>
+                        Evangeline the Oracle
+                    </div>
+                    <div class="character-name">Evangeline the Oracle</div>
+                    <div class="character-role">Seer of Fates and Fortunes</div>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <span class="gender-tag female">♀ Female</span>
+                    <div class="character-description">
+                        A mystical seer caught between knowing too much and the burden of foresight.
+                    </div>
+                    <div class="character-traits">
+                        <span class="trait">Mystical</span>
+                        <span class="trait">Burdened</span>
+                        <span class="trait">Enigmatic</span>
+                    </div>
+                    <div class="character-buttons">
+                        <a href="REPLACE_WITH_LINK_1" class="char-btn" data-button="button-1">Link 1</a>
+                        <a href="REPLACE_WITH_LINK_2" class="char-btn" data-button="button-2">Link 2</a>
+                        <a href="REPLACE_WITH_LINK_3" class="char-btn" data-button="button-3">Link 3</a>
+                        <a href="REPLACE_WITH_LINK_4" class="char-btn" data-button="button-4">Link 4</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <h2>Get In Touch</h2>
+            <div class="divider"></div>
+            <p style="text-align: center; margin-bottom: 1.5rem;">
+                Have questions, suggestions, or wish to commission a custom character? 
+                I'd love to hear from you!
+            </p>
+            <div style="text-align: center;">
+                <p>📧 Email: creator@botmaker.realm</p>
+                <p>🐦 Twitter: @BotmakerStudio</p>
+                <p>💬 Discord: Join our community server</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>✦ Botmaker - A Medieval Otome Experience ✦</p>
+        <p>&copy; 2026 All Rights Reserved. Created with ♥ and mystical energies.</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem;">May your heart find its true path...</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Character filter functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const characterCards = document.querySelectorAll('.character-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-filter');
+
+                // Filter cards
+                characterCards.forEach(card => {
+                    if (filter === 'all') {
+                        card.classList.remove('hidden');
+                    } else {
+                        const cardGender = card.getAttribute('data-gender');
+                        if (cardGender === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
